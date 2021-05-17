@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ftp="http://www.mulesoft.org/schema/mule/ftp" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ftp http://www.mulesoft.org/schema/mule/ftp/current/mule-ftp.xsd">
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="cd210a52-842e-4158-a083-170238eda349" />
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="01fea78e-1df5-4a22-898c-3a7076cae311" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<http:request-config name="HTTP_Request_configuration1" doc:name="HTTP Request configuration" doc:id="2aa89c51-ae02-453a-8646-b1dedc8250ac" basePath="/api/v1" >
+		<http:request-connection host="dummy.restapiexample.com" />
+	</http:request-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="b996f936-5e99-4df9-80a0-eac0769edd12" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<flow name="batchFlow" doc:id="abc80967-cff0-4b72-8748-a92c6f31f456" >
+		<http:listener doc:name="Http Listener" doc:id="06f129a7-3b33-4a19-b077-89b0b0f0ef7c" config-ref="HTTP_Listener_config" path="/Dummy"/>
+		<http:request method="GET" doc:name="Dummy Get Request" doc:id="e673b0db-d4e3-4225-aec2-df9b40090144" config-ref="HTTP_Request_configuration1" path="/employees" sendCorrelationId="AUTO"/>
+		<logger level="INFO" doc:name="Logger" doc:id="3008364a-1109-4119-90fa-8c59a37c4526" message="Received data"/>
+	</flow>
+	<flow name="PublishtrackMessage" doc:id="47eac19a-757b-4dbf-b6c1-62e547d328c2" >
+		<http:listener doc:name="Publisher" doc:id="988ddb99-6d4a-4079-90a1-1b1ecdaff9da" config-ref="HTTP_Listener_config" path="/publish"/>
+		<http:request method="POST" doc:name="Publisher API" doc:id="e0e71263-31f7-4a23-81fc-7e4fad3235dd" config-ref="HTTP_Request_configuration1" path="/create" sendCorrelationId="ALWAYS"/>
+	</flow>
+</mule>
